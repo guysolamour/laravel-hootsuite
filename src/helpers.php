@@ -4,19 +4,28 @@
 if (!function_exists('hootsuite')) {
 
     /**
-     * Arrange for a flash message.
+     *  Get hootsuite instance
      *
      * @param  string|null $message
      * @return \Guysolamour\Hootsuite\Hootsuite
      */
     function hootsuite()
     {
-        $hootsuite = app('hootsuite');
+        return  app('hootsuite');
+    }
+}
 
-        // if (!is_null($message)) {
-        //     return $hootsuite->success($message, $link);
-        // }
 
-        return $hootsuite;
+if (!function_exists('hootsuite_settings')) {
+
+    /**
+     * Get settings
+     *
+     * @param  string|null $message
+     * @return \Guysolamour\Hootsuite\Settings\HootsuiteSettings
+     */
+    function hootsuite_settings()
+    {
+        return app(Guysolamour\Hootsuite\Settings\HootsuiteSettings::class);
     }
 }
