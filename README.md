@@ -13,20 +13,22 @@ Install via composer
 composer require guysolamour/laravel-hootsuite
 ```
 
+
+Publish spatie service provider [laravel settings](https://github.com/spatie/laravel-settings) package
+
+In case you are already using this package in your project, you can skip this step
+
+```bash
+php artisan vendor:publish --provider="Spatie\LaravelSettings\LaravelSettingsServiceProvider"
+```
+
+
 Publish package assets
 
 ```bash
 php artisan vendor:publish --provider="Guysolamour\Hootsuite\ServiceProvider"
 ```
 
-Publish spatie [laravel settings](https://github.com/spatie/laravel-settings) package assets
-
-
-In case you are already using this package in your project, you can skip this step
-
-```bash
-php artisan vendor:publish --provider="Spatie\LaravelSettings\LaravelSettingsServiceProvider" --tag="settings"
-```
 
 Add the configuration to the *config/settings* file generated previously
 
@@ -35,6 +37,12 @@ Add the configuration to the *config/settings* file generated previously
   ...
   Guysolamour\Hootsuite\Settings\HootsuiteSettings\HootsuiteSettings::class,
 ]
+```
+
+run migrations
+
+```bash
+php artisan migrate
 ```
 
 If you wanted to shorten the urls used in your posts. You should get an api key from [bitly](https://dev.bitly.com) and add it to your *.env* file
