@@ -178,23 +178,14 @@ class HootsuiteClient
         return $newProfiles;
     }
 
-    /**
-     * Add a message
-     *
-     * @param array $args
-     * @return mixed
-     */
-    public function message(array $args)
-    {
-        return $this->schedule($args);
-    }
+
 
     /**
      *
      * @param int $messageId
      * @return array
      */
-    public function getMessage($messageId)
+    public function getMessage(int $messageId)
     {
         $response =  $this->get("messages/{$messageId}")->json();
 
@@ -205,7 +196,7 @@ class HootsuiteClient
      * @param int $messageId
      * @return bool
      */
-    public function deleteMessage($messageId)
+    public function destroy(int $messageId)
     {
         return $this->delete("messages/{$messageId}")->ok();
     }
@@ -265,7 +256,7 @@ class HootsuiteClient
      * @param array $args
      * @return Response
      */
-    public function schedule(array $args)
+    private function message(array $args, bool $schedule = false)
     {
         $data = [];
 
@@ -299,15 +290,47 @@ class HootsuiteClient
             ];
         }
 
-        $schedule = Arr::get($args, 'publish_at', false);
+        if ($schedule){
+            $schedule_date = Arr::get($args, 'schedule_at', false);
 
-        if ($schedule) {
-            $data['scheduledSendTime'] = Carbon::parse($schedule)->toIso8601ZuluString();
+            if ($schedule_date) {
+                if ($schedule_date instanceof \Carbon\Carbon){
+                    $data['scheduledSendTime'] = $schedule_date->toIso8601ZuluString();
+                }else {
+                    $data['scheduledSendTime'] = Carbon::parse($schedule_date)->toIso8601ZuluString();
+                }
+            }
         }
 
         $response = $this->post('messages', $data);
 
         return $response;
+    }
+
+    /**
+     * Publish a message
+     *
+     * @param array $args
+     * @return mixed
+     */
+    public function publish(array $args)
+    {
+        return $this->message($args);
+    }
+
+    /**
+     * Add a message
+     *
+     * @param array $args
+     * @return mixed
+     */
+    public function schedule(array $args)
+    {
+        if (!array_key_exists('schedule_at', $args)){
+            throw new \Exception("The [schedule_at] index is not present in the array data");
+        }
+
+        return $this->message($args, true);
     }
 
 

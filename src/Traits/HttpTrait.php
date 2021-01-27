@@ -31,7 +31,7 @@ trait HttpTrait
      * @param string $url
      * @return Response
      */
-    protected function get(string $url, array $data = [])
+    public function get(string $url, array $data = [])
     {
         return $this->http()->get($this->getApiUrl($url), $data);
     }
@@ -42,7 +42,7 @@ trait HttpTrait
      * @param string $url
      * @return Response
      */
-    protected function post(string $url, array $data = [])
+    public function post(string $url, array $data = [])
     {
         return $this->http()->post($this->getApiUrl($url), $data);
     }
@@ -53,7 +53,7 @@ trait HttpTrait
      * @param string $url
      * @return Response
      */
-    protected function put(string $url, array $data = [])
+    public function put(string $url, array $data = [])
     {
         return $this->http()->put($this->getApiUrl($url), $data);
     }
@@ -64,7 +64,7 @@ trait HttpTrait
      * @param string $url
      * @return Response
      */
-    protected function delete(string $url, array $data = [])
+    public function delete(string $url, array $data = [])
     {
         return $this->http()->delete($this->getApiUrl($url), $data);
     }
