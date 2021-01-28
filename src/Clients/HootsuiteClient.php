@@ -8,6 +8,8 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 use Guysolamour\Hootsuite\Traits\HttpTrait;
+use Guysolamour\Hootsuite\Exceptions\InvalidDataException;
+use Guysolamour\Hootsuite\Exceptions\InvalidResponseException;
 
 class HootsuiteClient
 {
@@ -229,7 +231,7 @@ class HootsuiteClient
      * @param string $url
      * @return string
      */
-    private function bitlyfyUrl(string $url) :string
+    private function bitlyfyUrl(string $url): string
     {
         return app('bitly')->getUrl($url);
     }
@@ -240,14 +242,13 @@ class HootsuiteClient
      * @param string $url
      * @return string
      */
-    private function bitlyfyAllUrls(string $url) :string
+    private function bitlyfyAllUrls(string $url): string
     {
         $pattern = '#[-a-zA-Z0-9@:%_\+.~\#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~\#?&//=]*)?#si';
 
-        return preg_replace_callback($pattern, function($matches){
+        return preg_replace_callback($pattern, function ($matches) {
             return $this->bitlyfyUrl($matches[0]);
         }, $url);
-
     }
 
     /**
@@ -258,6 +259,13 @@ class HootsuiteClient
      */
     private function message(array $args, bool $schedule = false)
     {
+        if (!Arr::exists($args, 'networks')) {
+            throw new InvalidDataException("The [networks] is required. Please add it to the data array");
+        }
+        if (!Arr::exists($args, 'text')) {
+            throw new InvalidDataException("The [text] is required. Please add it to the data array");
+        }
+
         $data = [];
 
         $link = Arr::get($args, 'link', '');
@@ -265,14 +273,16 @@ class HootsuiteClient
             $link = $this->bitlyfyUrl($link);
         }
 
+        $hashtags = Arr::get($args, 'hashtags', '');
+
         $text = $args['text'];
-        if (config('hootsuite.bity_all_links', false)){
+        if (config('hootsuite.bity_all_links', false)) {
             $text = $this->bitlyfyAllUrls($args['text']);
         }
 
         if ($args['text']) {
             $data['text'] = <<<HTML
-            {$args['hashtags']}
+            {$hashtags}
             {$text}
 
             {$link}
@@ -281,28 +291,30 @@ class HootsuiteClient
 
 
         $data['socialProfileIds'] = $this->getNetworks($args['networks']);
-        $data['emailNotification'] = $args['notify'];
+        $data['emailNotification'] = Arr::get($args, 'notify', false);
 
         $image = Arr::get($args, 'image', false);
-        if ($image) {
+        if ($image && filter_var($image, FILTER_VALIDATE_URL)) {
             $data['mediaUrls'] = [
                 ['url' => $this->uploadImage($image)]
             ];
         }
 
-        if ($schedule){
+        if ($schedule) {
             $schedule_date = Arr::get($args, 'schedule_at', false);
 
             if ($schedule_date) {
-                if ($schedule_date instanceof \Carbon\Carbon){
+                if ($schedule_date instanceof \Carbon\Carbon) {
                     $data['scheduledSendTime'] = $schedule_date->toIso8601ZuluString();
-                }else {
+                } else {
                     $data['scheduledSendTime'] = Carbon::parse($schedule_date)->toIso8601ZuluString();
                 }
             }
         }
 
+
         $response = $this->post('messages', $data);
+
 
         return $response;
     }
@@ -326,8 +338,8 @@ class HootsuiteClient
      */
     public function schedule(array $args)
     {
-        if (!array_key_exists('schedule_at', $args)){
-            throw new \Exception("The [schedule_at] index is not present in the array data");
+        if (!Arr::exists($args, 'schedule_at')) {
+            throw new InvalidDataException("The [schedule_at] index is not present in the array data");
         }
 
         return $this->message($args, true);
@@ -343,11 +355,11 @@ class HootsuiteClient
     private function uploadImage(string $image_url)
     {
         $request = $this->http()
-                        ->post($this->oauth_gateway_endpoint. '/photo/upload', [
-                            'image_url' => $image_url
-                        ]);
+            ->post($this->oauth_gateway_endpoint . '/photo/upload', [
+                'image_url' => $image_url
+            ]);
 
-        if ($request->ok()){
+        if ($request->ok()) {
             return $request['data'];
         }
     }
@@ -373,14 +385,14 @@ class HootsuiteClient
      */
     private function refreshToken(): void
     {
-        $request = Http::post($this->oauth_gateway_endpoint. '/refresh/token', [
+        $request = Http::post($this->oauth_gateway_endpoint . '/refresh/token', [
             'refresh_token' => $this->refresh_token,
         ]);
 
-        if ($request->ok()){
+        if ($request->ok()) {
             $this->setTokens($request->json());
-        }else {
-            throw new \Exception("An error occured when refreshing token");
+        } else {
+            throw new InvalidResponseException("An error occured when refreshing token");
         }
     }
 
@@ -443,10 +455,11 @@ class HootsuiteClient
         $this->refresh_token = $this->settings->get('hootsuite_refresh_token');
         $this->token_expires = Carbon::parse($this->settings->get('hootsuite_token_expires'));
 
+
         if (
-            !($this->access_token) || !($this->refresh_token) || !($this->token_expires)
+            !$this->access_token || !$this->refresh_token || !$this->token_expires
         ) {
-            throw new \Exception("Access tokens invalid. Do not forget to give permission to your hootsuite account");
+            throw new InvalidResponseException("Access tokens invalid. Do not forget to give permission to your hootsuite account");
         }
 
         if ($this->isExpiredToken()) {

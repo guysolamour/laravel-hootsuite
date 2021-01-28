@@ -23,11 +23,6 @@ php artisan vendor:publish --provider="Spatie\LaravelSettings\LaravelSettingsSer
 ```
 
 
-Publish package assets
-
-```bash
-php artisan vendor:publish --provider="Guysolamour\Hootsuite\ServiceProvider"
-```
 
 
 Add the configuration to the *config/settings* file generated previously
@@ -35,9 +30,16 @@ Add the configuration to the *config/settings* file generated previously
 ```php
 'settings' => [
   ...
-  Guysolamour\Hootsuite\Settings\HootsuiteSettings\HootsuiteSettings::class,
+  Guysolamour\Hootsuite\Settings\HootsuiteSettings::class,
 ]
 ```
+
+Publish package assets
+
+```bash
+php artisan vendor:publish --provider="Guysolamour\Hootsuite\ServiceProvider"
+```
+
 
 run migrations
 
@@ -47,8 +49,16 @@ php artisan migrate
 
 If you wanted to shorten the urls used in your posts. You should get an api key from [bitly](https://dev.bitly.com) and add it to your *.env* file
 
+Publish [Laravel Bitly](https://github.com/Shivella/laravel-bitly) package config file
+
+```bash
+php artisan vendor:publish --provider="Shivella\Bitly\BitlyServiceProvider"
+```
+
+and add this in your *.env* file
+
 ```php
-BITLY_ACCESS_TOKEN=
+BITLY_ACCESS_TOKEN=your_bitly_secret_access_token
 ```
 
 Then pass this option (s) to true
@@ -58,17 +68,13 @@ Then pass this option (s) to true
 'bity_all_links'  => true, // for all links in publication text
 ```
 
-
-
 ## Usage
 
 This package allows you to interact with the hootsuite API from its Laravel application. To do this, you must have a hootsuite account and allow the package to access this account.
 
-click  [here to grant permissions](https://platform.hootsuite.com/oauth2/auth/?client_id=dee91d5b-7c0a-454e-9149-fc40f91bbb40&response_type=code&scope=offline&redirect_uri=https%3A%2F%2Faswebagency.com%2Fapi%2Flaravel-hootsuite&state=http%3A%2F%2Flocalhost%3A8000%2Flaravel-hootsuite)
+You can  get authorization link with this artisan command
 
-You can also get the link with this artisan command
-
-```php
+```bash
 php artisan hootsuite:oauth:url
 ```
 
@@ -81,7 +87,6 @@ Hootsuite::publish([
   'text'        => "This is a text", // required
   'hashtags'    => "#this #is #a #test",
   'networks'    => "Facebook, Twitter, Linkedin", // required
-  'notify'      => false, // send message when post is published
   'image'       => 'https://domain.com/imagelink.jpg',
   'link'        => 'https://link.com',
 ]);
@@ -97,7 +102,6 @@ Hootsuite::schedule([
   'text'        => "This is a text", // required
   'hashtags'    => "#this #is #a #test",
   'networks'    => "Facebook, Twitter, Linkedin",
-  'notify'      => false, // send message when post is published
   'image'       => 'https://domain.com/imagelink.jpg', // image url pour presenter la publication
   'link'        => 'https://link.com', /
   'schedule_at' => '2021-01-15 08:59:12' // or carbon instance | required when schedule
@@ -151,7 +155,6 @@ Hootsuite::put(string $url);
 // Delete
 Hootsuite::delete(string $url);
 ```
-
 
 ## Security
 
