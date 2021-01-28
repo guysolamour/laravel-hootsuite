@@ -27,6 +27,8 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
 
         $this->loadRoutesFrom(__DIR__ . '/routes.php');
 
+        $this->loadViewsFrom(__DIR__.'/resources/views', 'hootsuite');
+
         $this->loadHelperFile();
     }
 
