@@ -2,7 +2,7 @@
 
 use Spatie\LaravelSettings\Migrations\SettingsMigration;
 
-class CreateHootsuiteSettings extends SettingsMigration
+class CreateHootsuiteSettingsTable extends SettingsMigration
 {
     public function up(): void
     {
@@ -33,7 +33,7 @@ class CreateHootsuiteSettings extends SettingsMigration
 
     }
 
-    
+
     public function down(): void
     {
         $settings_group  = config('hootsuite.settings.group');

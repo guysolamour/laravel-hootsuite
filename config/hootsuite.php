@@ -2,28 +2,27 @@
 
 return [
     /**
-     * L'idée de l'app, ne doit pas changer
+     * App client id, can not be changed
      */
     'client_id' => 'dee91d5b-7c0a-454e-9149-fc40f91bbb40',
      /**
-     * Le lien utiliser pour générer et rafraichir les tokens
+     * The link used to generate and refresh the tokens
      */
-    'redirect_uri' => 'https://aswebagency.com/api/laravel-hootsuite',
+    'redirect_uri' => 'https://aswebagency.com/laravel-hootsuite',
      /**
-     * L'url de l'api de hootsuite
+     * Hootsuite api url
      */
     'api_endpoint' => 'https://platform.hootsuite.com/',
     /**
-     * Raccourcir l'url qui est passe avec le message
+     * Shorten the url of the message link
      */
     'bitly_text_link' => false,
     /**
-     * Bitly aussi tous les liens présents dans le message
+     * Shorten all links in the message
      */
     'bity_all_links' => false,
     /**
-     * Cette configuration est en rapport sur le package laravel-setiing de spatie
-     * Vous pouvez consulter la documentation pour en savoir plus
+     * This configuration is related to the laravel-setting package of spatie
      */
     'settings'  => [
         'group'     => 'hootsuite',
@@ -31,7 +30,7 @@ return [
             'hootsuite' => [
                 'access_token'  => [
                     /**
-                     * Le nom ne doit pas etre changé
+                     * The name can not be changed
                      */
                     'name'          => 'hootsuite_access_token',
                     'default_value' => null,
@@ -39,13 +38,16 @@ return [
                 ],
                 'refresh_token'  => [
                     /**
-                     * Le nom de doit pas etre change
+                     * The name can not be changed
                      */
                     'name'          => 'hootsuite_refresh_token',
                     'default_value' => null,
                     'encrypted'     => false
                 ],
                 'token_expires'  => [
+                    /**
+                     * The name can not be changed
+                     */
                     'name'          => 'hootsuite_token_expires',
                     'default_value' => null,
                     'encrypted'     => false
@@ -53,6 +55,9 @@ return [
             ],
             'bitly'     => [
                 'api_token'  => [
+                    /**
+                     * The name can not be changed
+                     */
                     'name'          => 'bitly_api_token',
                     'default_value' => null,
                     'encrypted'     => true

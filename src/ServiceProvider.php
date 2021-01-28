@@ -12,16 +12,14 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
     public function boot()
     {
 
-        if ($this->app->runningInConsole()){
+        if ($this->app->runningInConsole()) {
             $this->publishes([
                 self::CONFIG_PATH  => config_path('hootsuite.php'),
             ], 'hootsuite-config');
 
-            if (!class_exists('CreateHootsuiteSettings')){
-                $this->publishes([
-                    __DIR__ . '/migrations/create_hootsuite_settings.php' => database_path('migrations/' . date('Y_m_d_His', time()). '_create_hootsuite_settings_table.php' ),
-                ], 'hootsuite-migrations');
-            }
+            $this->publishes([
+                __DIR__ . '/migrations/create_hootsuite_settings.php' => config('settings.migrations_path') . '/' . date('Y_m_d_His', time()) . '_create_hootsuite_settings_table.php',
+            ], 'hootsuite-migrations');
         }
 
 
@@ -48,7 +46,6 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
         $this->app->bind('hootsuite', function () {
             return new HootsuiteClient;
         });
-
     }
 
     private function loadHelperFile()
