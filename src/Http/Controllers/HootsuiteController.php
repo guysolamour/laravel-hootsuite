@@ -19,8 +19,6 @@ class HootsuiteController
             return;
         }
 
-
-
         $settings->saveTokens([
             'hootsuite_access_token'  => $request->get('access_token'),
             'hootsuite_refresh_token' => $request->get('refresh_token'),

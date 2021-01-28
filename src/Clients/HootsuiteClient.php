@@ -273,7 +273,7 @@ class HootsuiteClient
             $link = $this->bitlyfyUrl($link);
         }
 
-        $hashtags = Arr::get($args, 'hashtags', '');
+        $hashtags = $this->getHashTags(Arr::get($args, 'hashtags', ''));
 
         $text = $args['text'];
         if (config('hootsuite.bity_all_links', false)) {
@@ -311,6 +311,8 @@ class HootsuiteClient
                 }
             }
         }
+
+        dd($data);
 
 
         $response = $this->post('messages', $data);
@@ -465,5 +467,39 @@ class HootsuiteClient
         if ($this->isExpiredToken()) {
             $this->refreshToken();
         }
+    }
+
+    /**
+     * @param string|array $hashtags
+     * @return string
+     */
+    private function getHashTags($hashtags) :string
+    {
+        if (empty($hashtags)){
+            return '';
+        }
+
+        // ["this", "is", "a", "test"]
+        if (is_array($hashtags)){
+            return  $this->convertHashtagsToString($hashtags);
+        }
+
+        // this|is|a|tag
+        if (Str::contains($hashtags, '|')){
+            return $this->convertHashtagsToString(explode('|', $hashtags));
+        }
+
+        // this,is,a,tag
+        if (Str::contains($hashtags, ',')){
+            return $this->convertHashtagsToString(explode('|', $hashtags));
+        }
+
+    }
+
+    private function convertHashtagsToString(array $hashtags) :string
+    {
+        return collect($hashtags)->filter()->map(function ($hashtag) {
+            return Str::startsWith($hashtag, '#') ? $hashtag : '#' . $hashtag;
+        })->join(',');
     }
 }

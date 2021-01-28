@@ -22,9 +22,6 @@ In case you are already using this package in your project, you can skip this st
 php artisan vendor:publish --provider="Spatie\LaravelSettings\LaravelSettingsServiceProvider"
 ```
 
-
-
-
 Add the configuration to the *config/settings* file generated previously
 
 ```php
@@ -39,7 +36,6 @@ Publish package assets
 ```bash
 php artisan vendor:publish --provider="Guysolamour\Hootsuite\ServiceProvider"
 ```
-
 
 run migrations
 
@@ -85,7 +81,7 @@ use Guysolamour\Hootsuite\Facades\Hootsuite;
 
 Hootsuite::publish([
   'text'        => "This is a text", // required
-  'hashtags'    => "#this #is #a #test",
+  'hashtags'    => "#this #is #a #hashtag", // or "this|is|a|hashtag" or ['this', 'is', 'a', 'hashtag'] or "this,is,a,hashtag"
   'networks'    => "Facebook, Twitter, Linkedin", // required
   'image'       => 'https://domain.com/imagelink.jpg',
   'link'        => 'https://link.com',
@@ -100,7 +96,7 @@ use Guysolamour\Hootsuite\Facades\Hootsuite;
 
 Hootsuite::schedule([
   'text'        => "This is a text", // required
-  'hashtags'    => "#this #is #a #test",
+ 'hashtags'    => "#this #is #a #hashtag", // or "this|is|a|hashtag" or ['this', 'is', 'a', 'hashtag'] or "this,is,a,hashtag"
   'networks'    => "Facebook, Twitter, Linkedin",
   'image'       => 'https://domain.com/imagelink.jpg', // image url pour presenter la publication
   'link'        => 'https://link.com', /
