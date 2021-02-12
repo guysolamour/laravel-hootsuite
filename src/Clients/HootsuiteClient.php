@@ -289,16 +289,12 @@ class HootsuiteClient
             HTML;
         }
 
-
         $data['socialProfileIds'] = $this->getNetworks($args['networks']);
         $data['emailNotification'] = Arr::get($args, 'notify', false);
 
-        $image = Arr::get($args, 'image', false);
-        if ($image && filter_var($image, FILTER_VALIDATE_URL)) {
-            $data['mediaUrls'] = [
-                ['url' => $this->uploadImage($image)]
-            ];
-        }
+        $media = Arr::get($args, 'media', false);
+        $data['mediaUrls'] = $this->uploadMedia($media);
+
 
         if ($schedule) {
             $schedule_date = Arr::get($args, 'schedule_at', false);
@@ -311,9 +307,6 @@ class HootsuiteClient
                 }
             }
         }
-
-        dd($data);
-
 
         $response = $this->post('messages', $data);
 
@@ -351,19 +344,28 @@ class HootsuiteClient
     /**
      * Upload image and get url
      *
-     * @param string $image_url
-     * @return void
+     * @param string|string[] $image_url
+     * @return array
      */
-    private function uploadImage(string $image_url)
+    private function uploadMedia($media): array
     {
-        $request = $this->http()
-            ->post($this->oauth_gateway_endpoint . '/photo/upload', [
-                'image_url' => $image_url
-            ]);
+        $media = Arr::wrap($media);
 
-        if ($request->ok()) {
-            return $request['data'];
+        $urls = [];
+
+        foreach ($media as $item) {
+            $request = $this->http()
+                ->post($this->oauth_gateway_endpoint . '/photo/upload', [
+                    'image_url' => $item
+                ]);
+
+            $request->throw();
+
+            array_push($urls, ['url' => $request['data']]);
         }
+
+
+        return $urls;
     }
 
     /**
@@ -473,30 +475,31 @@ class HootsuiteClient
      * @param string|array $hashtags
      * @return string
      */
-    private function getHashTags($hashtags) :string
+    private function getHashTags($hashtags): string
     {
-        if (empty($hashtags)){
+        if (empty($hashtags)) {
             return '';
         }
 
         // ["this", "is", "a", "test"]
-        if (is_array($hashtags)){
+        if (is_array($hashtags)) {
             return  $this->convertHashtagsToString($hashtags);
         }
 
         // this|is|a|tag
-        if (Str::contains($hashtags, '|')){
+        if (Str::contains($hashtags, '|')) {
             return $this->convertHashtagsToString(explode('|', $hashtags));
         }
 
         // this,is,a,tag
-        if (Str::contains($hashtags, ',')){
+        if (Str::contains($hashtags, ',')) {
             return $this->convertHashtagsToString(explode('|', $hashtags));
         }
 
+        return $hashtags;
     }
 
-    private function convertHashtagsToString(array $hashtags) :string
+    private function convertHashtagsToString(array $hashtags): string
     {
         return collect($hashtags)->filter()->map(function ($hashtag) {
             return Str::startsWith($hashtag, '#') ? $hashtag : '#' . $hashtag;

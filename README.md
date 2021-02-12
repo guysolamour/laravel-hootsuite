@@ -81,9 +81,9 @@ use Guysolamour\Hootsuite\Facades\Hootsuite;
 
 Hootsuite::publish([
   'text'        => "This is a text", // required
-  'hashtags'    => "#this #is #a #hashtag", // or "this|is|a|hashtag" or ['this', 'is', 'a', 'hashtag'] or "this,is,a,hashtag"
+  'hashtags'    => ["this, is, a, hashtag"], // or "this|is|a|hashtag" or ['this', 'is', 'a', 'hashtag'] or "this,is,a,hashtag"
   'networks'    => "Facebook, Twitter, Linkedin", // required
-  'image'       => 'https://domain.com/imagelink.jpg',
+  'media'       => 'https://domain.com/imagelink.jpg', // ['mediaUrl1', 'mediaUrl2']
   'link'        => 'https://link.com',
 ]);
 ```
@@ -96,10 +96,10 @@ use Guysolamour\Hootsuite\Facades\Hootsuite;
 
 Hootsuite::schedule([
   'text'        => "This is a text", // required
- 'hashtags'    => "#this #is #a #hashtag", // or "this|is|a|hashtag" or ['this', 'is', 'a', 'hashtag'] or "this,is,a,hashtag"
+ 'hashtags'    => ["this, is, a, hashtag"], // or "this|is|a|hashtag" or ['this', 'is', 'a', 'hashtag'] or "this,is,a,hashtag"
   'networks'    => "Facebook, Twitter, Linkedin",
-  'image'       => 'https://domain.com/imagelink.jpg', // image url pour presenter la publication
-  'link'        => 'https://link.com', /
+  'media'       => 'https://domain.com/imagelink.jpg', // ['mediaUrl1', 'mediaUrl2']
+  'link'        => 'https://link.com',
   'schedule_at' => '2021-01-15 08:59:12' // or carbon instance | required when schedule
 ]);
 ```
