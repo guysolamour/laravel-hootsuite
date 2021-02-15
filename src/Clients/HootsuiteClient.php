@@ -293,8 +293,9 @@ class HootsuiteClient
         $data['emailNotification'] = Arr::get($args, 'notify', false);
 
         $media = Arr::get($args, 'media', false);
-        $data['mediaUrls'] = $this->uploadMedia($media);
-
+        if ($media){
+            $data['mediaUrls'] = $this->uploadMedia($media);
+        }
 
         if ($schedule) {
             $schedule_date = Arr::get($args, 'schedule_at', false);
