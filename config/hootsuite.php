@@ -2,17 +2,17 @@
 
 return [
     /**
-     * App client id, can not be changed
+     * App client id
      */
-    'client_id' => 'dee91d5b-7c0a-454e-9149-fc40f91bbb40',
+    'client_id' => env('HOOTSUITE_CLIENT_ID'),
+    /**
+     * App client secret
+     */
+    'client_secret' => env('HOOTSUITE_CLIENT_SECRET'),
      /**
      * The link used to generate and refresh the tokens
      */
-    'redirect_uri' => 'https://aswebagency.com/laravel-hootsuite',
-     /**
-     * Hootsuite api url
-     */
-    'api_endpoint' => 'https://platform.hootsuite.com/',
+    'redirect_uri' => env('HOOTSUITE_REDIRECT_URI'),
     /**
      * Shorten the url of the message link
      */
@@ -34,7 +34,7 @@ return [
                      */
                     'name'          => 'hootsuite_access_token',
                     'default_value' => null,
-                    'encrypted'     => false
+                    'encrypted'     => true
                 ],
                 'refresh_token'  => [
                     /**
@@ -42,7 +42,7 @@ return [
                      */
                     'name'          => 'hootsuite_refresh_token',
                     'default_value' => null,
-                    'encrypted'     => false
+                    'encrypted'     => true
                 ],
                 'token_expires'  => [
                     /**

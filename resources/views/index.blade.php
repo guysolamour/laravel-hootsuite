@@ -26,7 +26,11 @@
                     <li class="list-group-item">Expiration Date      => {{ $settings->get('hootsuite_token_expires') }}</li>
                 </ul>
             </div>
+            <div class="card-footer d-flex justify-content-center">
+                <a href="/" class="btn btn-primary btn-lg">Go to homepage</a>
+            </div>
         </div>
+
     </div>
 </body>
 </html>

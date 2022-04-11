@@ -5,8 +5,10 @@ namespace Guysolamour\Hootsuite\Clients;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Ixudra\Curl\Facades\Curl;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 use Guysolamour\Hootsuite\Traits\HttpTrait;
 use Guysolamour\Hootsuite\Exceptions\InvalidDataException;
 use Guysolamour\Hootsuite\Exceptions\InvalidResponseException;
@@ -14,6 +16,19 @@ use Guysolamour\Hootsuite\Exceptions\InvalidResponseException;
 class HootsuiteClient
 {
     use HttpTrait;
+
+    /**
+     * Holds the API endpoint
+     * @var     string
+     */
+    private const API_ENDPOINT = 'https://platform.hootsuite.com/';
+
+    /**
+     * Holds the API endpoint
+     * @var     string
+     */
+    private const API_VERSION = 'v1';
+
 
     /**
      * Holds the Hootsuite Application's Client ID
@@ -27,25 +42,6 @@ class HootsuiteClient
      * @var     string
      */
     private $client_secret = '';
-
-    /**
-     * Holds the oAuth Gateway endpoint, used to exchange a code for an access token
-     * @var     string
-     */
-    private $oauth_gateway_endpoint = '';
-
-    /**
-     * Holds the API endpoint
-     * @var     string
-     */
-    private $api_endpoint = '';
-
-
-    /**
-     * Holds the API version
-     * @var     string
-     */
-    private $api_version = 'v1';
 
 
 
@@ -77,15 +73,12 @@ class HootsuiteClient
     public function __construct()
     {
         $this->client_id              = config('hootsuite.client_id');
-        $this->oauth_gateway_endpoint = config('hootsuite.redirect_uri');
-        $this->api_endpoint           = config('hootsuite.api_endpoint');
-
+        $this->client_secret          = config('hootsuite.client_secret');
 
         $this->settings               = hootsuite_settings();
 
         $this->setup();
     }
-
 
 
     /**
@@ -181,7 +174,6 @@ class HootsuiteClient
     }
 
 
-
     /**
      *
      * @param int $messageId
@@ -209,7 +201,7 @@ class HootsuiteClient
      */
     protected function getApiUrl(string $url = ''): string
     {
-        return "{$this->api_endpoint}{$this->api_version}/{$url}";
+        return self::API_ENDPOINT . self::API_VERSION . DIRECTORY_SEPARATOR . $url;
     }
 
     /**
@@ -355,16 +347,13 @@ class HootsuiteClient
         $urls = [];
 
         foreach ($media as $item) {
-            $request = $this->http()
-                ->post($this->oauth_gateway_endpoint . '/photo/upload', [
-                    'image_url' => $item
-                ]);
 
-            $request->throw();
+            $response = Http::attach(
+                'image_url', $item
+            )->post('https://www.wpzinc.com/?api=owly&action=photo/upload')->throw();
 
-            array_push($urls, ['url' => $request['data']]);
+            array_push($urls, ['url' => $response->json('data')]);
         }
-
 
         return $urls;
     }
@@ -388,17 +377,24 @@ class HootsuiteClient
      *
      * @return void
      */
-    private function refreshToken(): void
+    private function refreshToken()
     {
-        $request = Http::post($this->oauth_gateway_endpoint . '/refresh/token', [
-            'refresh_token' => $this->refresh_token,
-        ]);
+        $args = [
+            'grant_type'    => 'refresh_token',
+            'redirect_uri'  =>  url(config('hootsuite.redirect_uri')),
+            'scope'         => 'offline',
+            'refresh_token' => $this->refresh_token
+        ];
 
-        if ($request->ok()) {
-            $this->setTokens($request->json());
+        $response =  $this->postAsForm(null, $args);
+
+        if ($response->ok()) {
+            $this->setTokens($response->json());
         } else {
             throw new InvalidResponseException("An error occured when refreshing token");
         }
+
+        return $response;
     }
 
     /**
@@ -506,4 +502,21 @@ class HootsuiteClient
             return Str::startsWith($hashtag, '#') ? $hashtag : '#' . $hashtag;
         })->join(',');
     }
+
+    /**
+     * Send a post request to the Hootsuite Api
+     *
+     * @param string $url
+     * @return Response
+     */
+    public static function postAsForm(?string $url = null, array $data = [])
+    {
+        return Http::asForm()
+            ->withHeaders([
+                'Authorization' => 'Basic ' .  base64_encode(config('hootsuite.client_id') . ':' . config('hootsuite.client_secret')),
+            ])
+            ->post($url ?? self::API_ENDPOINT . 'oauth2/token', $data)
+            ->throw();
+    }
+
 }

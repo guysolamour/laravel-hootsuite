@@ -48,9 +48,10 @@ class GetOauthCodeUrlCommand extends Command
             'client_id'     => config('hootsuite.client_id'),
             'response_type' => 'code',
             'scope'         => 'offline',
-            'redirect_uri'  => config('hootsuite.redirect_uri'),
-            'state'         => route('hootsuite.redirect.uri'),
+            'redirect_uri'  => url(config('hootsuite.redirect_uri')),
+           // 'state'         => route('hootsuite.redirect.uri.tokens'),
         ];
-        return config('hootsuite.api_endpoint') . 'oauth2/auth/?' . http_build_query($args);
+
+        return config('hootsuite.api_endpoint') . 'oauth2/auth?' . http_build_query($args);
     }
 }

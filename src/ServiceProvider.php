@@ -22,12 +22,11 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
             ], 'hootsuite-migrations');
         }
 
-
         $this->loadMigrationsFrom(config('settings.migrations_path'));
 
         $this->loadRoutesFrom(__DIR__ . '/routes.php');
 
-        $this->loadViewsFrom(__DIR__.'/resources/views', 'hootsuite');
+        $this->loadViewsFrom(dirname(__DIR__).'/resources/views', 'hootsuite');
 
         $this->loadHelperFile();
     }

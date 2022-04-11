@@ -47,6 +47,8 @@ trait HttpTrait
         return $this->http()->post($this->getApiUrl($url), $data);
     }
 
+
+
     /**
      * Send a put request to the hootsuite Api
      *

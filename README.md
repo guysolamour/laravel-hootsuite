@@ -31,13 +31,32 @@ Add the configuration to the *config/settings* file generated previously
 ]
 ```
 
+Add these keys to your *.env* file
+```php
+/*
+  Available in your hootsuite dashboard
+*/
+HOOTSUITE_CLIENT_ID=your_hootsuite_client_id
+/*
+  Available in your hootsuite dashboard
+*/
+HOOTSUITE_CLIENT_SECRET=your_hootsuite_client_secret
+
+/*
+  Only the url path
+  A route will be create with this url path
+  The redirect uri domain must be your website domain
+*/
+HOOTSUITE_REDIRECT_URI=your_hootsuite_redirect_uri
+```
+
 Publish package assets
 
 ```bash
 php artisan vendor:publish --provider="Guysolamour\Hootsuite\ServiceProvider"
 ```
 
-run migrations
+Run migrations
 
 ```bash
 php artisan migrate
@@ -66,7 +85,7 @@ Then pass this option (s) to true
 
 ## Usage
 
-This package allows you to interact with the hootsuite API from its Laravel application. To do this, you must have a hootsuite account and allow the package to access this account.
+This package allows you to interact with the hootsuite API from a Laravel application. To do this, you must have a hootsuite account and allow the package to access this account.
 
 You can  get authorization link with this artisan command
 
