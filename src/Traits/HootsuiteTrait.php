@@ -17,7 +17,7 @@ trait  HootsuiteTrait
      *
      * @return void
      */
-    abstract public function PublishToSocialNetworksViaHootsuite();
+    abstract public function publishToSocialNetworksViaHootsuite();
 
     /**
      * Get new Hootsuite instance
@@ -35,12 +35,12 @@ trait  HootsuiteTrait
         /**
          * @param \Illuminate\Database\Eloquent\Model $model
          */
-        static::saved(function ($model) {
+        static::created(function ($model) {
             if (
-                method_exists($model, 'PublishToSocialNetworksViaHootsuite') &&
+                method_exists($model, 'publishToSocialNetworksViaHootsuite') &&
                 $model->publish_via_hootsuite
             ) {
-                $model->PublishToSocialNetworksViaHootsuite();
+                $model->publishToSocialNetworksViaHootsuite();
             }
         });
     }

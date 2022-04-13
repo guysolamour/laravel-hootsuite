@@ -3,6 +3,7 @@
 namespace Guysolamour\Hootsuite\Commands;
 
 use Illuminate\Console\Command;
+use Guysolamour\Hootsuite\Clients\HootsuiteClient;
 
 
 class GetOauthCodeUrlCommand extends Command
@@ -52,6 +53,6 @@ class GetOauthCodeUrlCommand extends Command
            // 'state'         => route('hootsuite.redirect.uri.tokens'),
         ];
 
-        return config('hootsuite.api_endpoint') . 'oauth2/auth?' . http_build_query($args);
+        return HootsuiteClient::API_ENDPOINT . 'oauth2/auth?' . http_build_query($args);
     }
 }

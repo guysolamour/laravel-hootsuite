@@ -5,10 +5,8 @@ namespace Guysolamour\Hootsuite\Clients;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use Ixudra\Curl\Facades\Curl;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Storage;
 use Guysolamour\Hootsuite\Traits\HttpTrait;
 use Guysolamour\Hootsuite\Exceptions\InvalidDataException;
 use Guysolamour\Hootsuite\Exceptions\InvalidResponseException;
@@ -21,13 +19,13 @@ class HootsuiteClient
      * Holds the API endpoint
      * @var     string
      */
-    private const API_ENDPOINT = 'https://platform.hootsuite.com/';
+    public const API_ENDPOINT = 'https://platform.hootsuite.com/';
 
     /**
      * Holds the API endpoint
      * @var     string
      */
-    private const API_VERSION = 'v1';
+    public const API_VERSION = 'v1';
 
 
     /**
